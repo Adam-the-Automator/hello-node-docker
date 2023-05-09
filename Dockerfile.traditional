@@ -1,0 +1,19 @@
+# syntax=docker/dockerfile:1
+
+# Use node 18 as the base image from Docker Hub
+FROM node:18
+
+# Create a working directory /usr/src/app
+WORKDIR /usr/src/app
+
+# Copy the source code to the container
+COPY . .
+
+# Install app dependencies via Yarn
+RUN yarn install
+
+# Expose port 8080 for app.js
+EXPOSE 8080
+
+# Define a default command to start app.js
+CMD [ "node", "app.js" ]
