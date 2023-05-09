@@ -1,0 +1,36 @@
+# syntax=docker/dockerfile:1
+
+# Stage 1 - Use the node 18 image as the builder and install dependencies
+FROM node:18 AS build-env
+
+# Create a working directory
+WORKDIR /app
+
+# Copy package.json
+COPY package.json package.json
+
+# Installing dependencies via Yarn
+# Using the parameter to enable cache of the target directory /root/.yarn
+# to be preserved between builds
+RUN --mount=type=cache,target=/root/.yarn,sharing=shared \\
+ls -l --time-style=+"%b %d %Y %H:%M" /root/.yarn \\
+&& YARN_CACHE_FOLDER=/root/.yarn yarn install \\
+&& ls -lt --time-style=+"%b %d %Y %H:%M" /root/.yarn/v6
+
+# Copy app.js
+COPY app.js /app
+
+# Stage 2 - final image using Distroless
+FROM gcr.io/distroless/nodejs
+
+# Create a working directory
+WORKDIR /app
+
+# Copy the /app from build-env stage 1
+COPY --from=build-env /app /app
+
+# Expose port 8080 for app.js
+EXPOSE 8080
+
+# Start command
+CMD ["app.js"]
