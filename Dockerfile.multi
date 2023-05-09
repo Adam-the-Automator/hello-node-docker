@@ -1,0 +1,29 @@
+# syntax=docker/dockerfile:1
+
+# Stage 1 - Using node 18 as the base image for the build-env
+FROM node:18 AS build-env
+
+# Create a working directory /app
+WORKDIR /app
+
+# Copy package.json and install dependencies
+COPY package.json package.json
+RUN yarn install
+
+# Copy the app.js to /app directory
+COPY app.js /app
+
+# Stage 2 - Use the distroless Docker image for the final build
+FROM gcr.io/distroless/nodejs
+
+# Setup working directory /app
+WORKDIR /app
+
+# Copy the application with its dependencies into a distroless image
+COPY --from=build-env /app /app
+
+# Expose port 8080 for the app.js
+EXPOSE 8080
+
+# Start the app.js
+CMD ["app.js"]
