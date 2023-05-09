@@ -1,0 +1,8 @@
+{
+  "name": "hello_node",
+  "version": "0.1",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
